@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>🇰🇷 韓國購物清單</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#FAF7F2;--card:#FFF;--text:#1A1A1A;--text2:#7A7168;--text3:#B5AA9C;
+  --accent:#D4763C;--green:#5B8C5A;--blue:#5B7FA5;--red:#C75050;--border:#EDE8E0;--shadow:0 2px 8px rgba(0,0,0,0.06)}
+body{font-family:'Noto Sans TC','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;padding-bottom:76px;font-size:15px;line-height:1.6}
+.hero{padding:24px 16px 18px;background:linear-gradient(145deg,#F5EDE3,#FAF7F2);border-bottom:1px solid var(--border)}
+.hero h1{font-size:26px;font-weight:900}
+.hero-sub{font-size:14px;color:var(--text2);margin-top:6px;line-height:1.7}
+.hero-stats{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 14px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px}
+.stat .num{color:var(--accent);font-size:17px}
+.filters{position:sticky;top:0;z-index:100;background:rgba(250,247,242,0.96);backdrop-filter:blur(10px);
+  padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.fbtn{padding:8px 16px;border-radius:22px;font-size:14px;font-weight:600;border:1.5px solid var(--border);background:var(--card);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.2s}
+.fbtn.active{background:var(--text);color:#fff;border-color:var(--text)}
+.section{margin:18px 12px 0}
+.section-header{display:flex;align-items:center;gap:10px;padding:10px 4px;cursor:pointer}
+.section-icon{font-size:22px}.section-title{font-size:17px;font-weight:900;flex:1}
+.section-count{font-size:12px;color:var(--text3);background:var(--border);padding:3px 10px;border-radius:12px;font-weight:700}
+.section-arrow{font-size:14px;color:var(--text3);transition:transform 0.3s}
+.section.collapsed .section-arrow{transform:rotate(-90deg)}
+.section.collapsed .section-items{display:none}
+.item{background:var(--card);border-radius:16px;margin:8px 0;padding:14px;box-shadow:var(--shadow);border:1.5px solid transparent;transition:all 0.2s;display:flex;gap:10px;align-items:flex-start}
+.item.checked{opacity:0.4;border-color:var(--green)}
+.item.checked .item-kr{text-decoration:line-through}
+.item.hidden{display:none}
+.item-check{width:26px;height:26px;border-radius:8px;border:2.5px solid var(--border);flex-shrink:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;margin-top:2px;transition:all 0.2s;background:#fff}
+.item.checked .item-check{background:var(--green);border-color:var(--green)}
+.item.checked .item-check::after{content:'✓';color:#fff;font-size:15px;font-weight:900}
+.item-img{width:60px;height:60px;border-radius:12px;flex-shrink:0;overflow:hidden;cursor:pointer;position:relative;
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff}
+.item-img img{width:100%;height:100%;object-fit:cover}
+.item-img .img-label{position:absolute;bottom:0;right:0;background:rgba(0,0,0,0.55);color:#fff;
+  font-size:9px;padding:2px 5px;border-radius:6px 0 0 0;font-weight:700}
+.item-body{flex:1;min-width:0;display:flex;flex-direction:column}
+.item-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.item-brand{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:0.2px}
+.item-who{font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px}
+.who-lj{background:#FCECD8;color:#B8692B}.who-j6{background:#D8E8F5;color:#3E6E96}.who-both{background:#EDE2F5;color:#6B4E8A}
+.item-kr{font-size:16px;font-weight:700;font-family:'Noto Sans KR','Noto Sans TC',sans-serif;margin-top:4px;line-height:1.4}
+.item-name{font-size:12px;color:var(--text2);margin-top:2px}
+.item-note{font-size:13px;color:var(--text2);margin-top:4px;line-height:1.6}
+.skin-tip{color:var(--accent);font-weight:700}
+.item-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:600;padding:3px 10px;border-radius:10px}
+.tag-must{background:#FDDEDE;color:var(--red)}.tag-nice{background:#FDE8D8;color:#B55C2A}.tag-opt{background:#EDE8E0;color:#8C8376}
+.tag-oy{background:#F5E6D3;color:#A0723A}.tag-rx{background:#E2ECF5;color:#4A6F94}.tag-mk{background:#F0E8F5;color:#7054A0}
+.item-price-bar{margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.price-kr{font-size:15px;font-weight:900;color:var(--red)}
+.price-tw{font-size:13px;font-weight:600;color:var(--text2)}
+.price-deal{font-size:11px;font-weight:700;color:#fff;background:var(--red);padding:2px 7px;border-radius:6px}
+.price-save{font-size:11px;font-weight:700;color:#fff;background:var(--green);padding:2px 7px;border-radius:6px}
+.price-only{font-size:11px;font-weight:600;color:var(--blue);background:#E2ECF5;padding:2px 7px;border-radius:6px}
+.price-tw-line{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;margin-top:3px}
+.price-tw-line .tw-orig{text-decoration:line-through}
+/* Lightbox */
+.lb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;flex-direction:column;padding:20px}
+.lb-overlay.open{display:flex}
+.lb-close{position:absolute;top:16px;right:20px;color:#fff;font-size:28px;cursor:pointer;font-weight:700;z-index:10000}
+.lb-content{background:#fff;border-radius:16px;width:90vw;max-width:400px;overflow:hidden;max-height:85vh;overflow-y:auto}
+.lb-brand{padding:14px 16px 2px;font-size:14px;font-weight:700;color:var(--accent)}
+.lb-kr{padding:4px 16px 0;font-size:20px;font-weight:900;font-family:'Noto Sans KR','Noto Sans TC',sans-serif;line-height:1.4}
+.lb-name{padding:2px 16px 10px;font-size:13px;color:var(--text2)}
+.lb-img-frame{width:100%;aspect-ratio:1;background:#f5f5f5;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.lb-img-frame img{max-width:100%;max-height:100%;object-fit:contain}
+.lb-actions{padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.lb-btn{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;
+  font-family:'Noto Sans TC',sans-serif;text-align:center;text-decoration:none;min-width:120px}
+.lb-btn-primary{background:var(--text);color:#fff}
+.lb-btn-secondary{background:#f0ebe4;color:var(--text)}
+.lb-btn-upload{background:var(--accent);color:#fff}
+/* Route */
+.route{margin:18px 12px;background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.route-title{font-size:17px;font-weight:900;margin-bottom:12px}
+.route-stop{display:flex;gap:12px;margin:10px 0}
+.route-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.route-line{border-left:2px dashed var(--border);margin-left:5px;padding-left:16px;padding-bottom:12px}
+.route-place{font-size:15px;font-weight:700}
+.route-items{font-size:13px;color:var(--text2);margin-top:3px;line-height:1.7}
+.route-time{font-size:12px;color:var(--accent);font-weight:700;margin-top:3px}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(26,26,26,0.92);color:#fff;padding:12px 22px;border-radius:14px;
+  font-size:14px;font-weight:600;opacity:0;transition:all 0.3s;pointer-events:none;z-index:999;
+  backdrop-filter:blur(8px);max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Sticky bottom price bar */
+.sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(26,26,26,0.95);backdrop-filter:blur(12px);color:#fff;
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.sticky-left{display:flex;flex-direction:column;gap:2px}
+.sticky-total{font-size:20px;font-weight:900;letter-spacing:-0.5px}
+.sticky-total .over{color:#ff6b6b}
+.sticky-sub{font-size:11px;color:rgba(255,255,255,0.6);font-weight:500}
+.sticky-right{display:flex;gap:6px}
+.sticky-btn{padding:10px 16px;border-radius:12px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:'Noto Sans TC',sans-serif}
+.sticky-btn-reset{background:rgba(255,255,255,0.15);color:#fff}
+.sticky-btn-stat{background:var(--accent);color:#fff}
+.sticky-progress{position:absolute;top:0;left:0;height:3px;background:var(--green);transition:width 0.5s}
+@media(min-width:500px){.section,.route{max-width:480px;margin-left:auto;margin-right:auto}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>🇰🇷 韓國購物清單</h1>
+  <div class="hero-sub">LJ 偏黃自然色調｜J6 油肌痘痘<br>預算 NT$10,000 ・ 3/26–3/30 首爾</div>
+  <div class="hero-stats">
+    <div class="stat">★必買 <span class="num" id="mustCount">0</span></div>
+    <div class="stat">值得買 <span class="num" id="niceCount">0</span></div>
+    <div class="stat">看價格 <span class="num" id="optCount">0</span></div>
+    <div class="stat">省 <span class="num" id="saveTotal">$0</span></div>
+  </div>
+</div>
+<div class="filters">
+  <button class="fbtn active" data-f="all" onclick="setFilter('all',this)">全部</button>
+  <button class="fbtn" data-f="lj" onclick="setFilter('lj',this)">🧡 LJ</button>
+  <button class="fbtn" data-f="j6" onclick="setFilter('j6',this)">💙 J6</button>
+  <button class="fbtn" data-f="must" onclick="setFilter('must',this)">★必買</button>
+  <button class="fbtn" data-f="nice" onclick="setFilter('nice',this)">值得買</button>
+  <button class="fbtn" data-f="oy" onclick="setFilter('oy',this)">OY</button>
+  <button class="fbtn" data-f="rx" onclick="setFilter('rx',this)">💊藥局</button>
+</div>
+<div id="listWrap"></div>
+<div class="route">
+  <div class="route-title">🗺 購物動線</div>
+  <div class="route-stop"><div class="route-dot" style="background:var(--blue)"></div><div class="route-line">
+    <div class="route-place">Day1 明洞藥局 NOVA</div>
+    <div class="route-items">J6：애크논+노스카나+애크린+클리어틴<br>LJ：비타민K크림+판테놀+큐립</div>
+    <div class="route-time">📍 當晚 20:30・營業到 23:00</div>
+  </div></div>
+  <div class="route-stop"><div class="route-dot" style="background:var(--accent)"></div><div class="route-line">
+    <div class="route-place">Day1/4 Olive Young</div>
+    <div class="route-items">保養＋彩妝＋零食一站買齊<br>帶護照退稅（滿₩30,000起）</div>
+    <div class="route-time">📍 明洞或弘大・留 40min+</div>
+  </div></div>
+  <div class="route-stop"><div class="route-dot" style="background:var(--green)"></div><div class="route-line" style="border:none;padding-bottom:0">
+    <div class="route-place">Day4 弘大超市</div>
+    <div class="route-items">高湯塊、蝦條、拌麵等伴手禮</div>
+    <div class="route-time">📍 逛完弘大順路</div>
+  </div></div>
+</div>
+<div class="lb-overlay" id="lightbox" onclick="closeLB(event)">
+  <div class="lb-close" onclick="document.getElementById('lightbox').classList.remove('open')">&times;</div>
+  <div class="lb-content" onclick="event.stopPropagation()">
+    <div class="lb-brand" id="lbBrand"></div>
+    <div class="lb-kr" id="lbKr"></div>
+    <div class="lb-name" id="lbName"></div>
+    <div class="lb-img-frame" id="lbImgFrame"></div>
+    <div class="lb-actions">
+      <a class="lb-btn lb-btn-primary" id="lbSearchBtn" href="#" target="_blank">🔍 Google 圖搜</a>
+      <label class="lb-btn lb-btn-upload" id="lbUploadLabel">📷 上傳圖片<input type="file" accept="image/*" id="lbUploadInput" style="display:none" onchange="handleUpload(event)"></label>
+      <a class="lb-btn lb-btn-secondary" id="lbOYBtn" href="#" target="_blank">🛒 OY 搜尋</a>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="sticky-bar">
+  <div class="sticky-progress" id="stickyProgress"></div>
+  <div class="sticky-left">
+    <div class="sticky-total" id="stickyTotal">NT$0</div>
+    <div class="sticky-sub" id="stickySub">0 品 已勾｜剩餘 NT$10,000</div>
+  </div>
+  <div class="sticky-right">
+    <button class="sticky-btn sticky-btn-reset" onclick="resetAll()">↺</button>
+    <button class="sticky-btn sticky-btn-stat" onclick="showSummary()">📊 統計</button>
+  </div>
+</div>
+<script>
+const BUDGET=10000,RATE=0.0233;
+const BC={'VT':'#8B4513','Dr.Jart':'#2E7D32','PRO-CALM':'#6A1B9A','Abib':'#BFA98E','REJUALL':'#C7A44E',
+  'S.NATURE':'#5C7A4A','HEVEBLUE':'#4A90D9','REJURAN':'#7B8FA1','Acnon':'#D32F2F','Noscarna':'#C62828',
+  'Acleen':'#388E3C','HANDOK':'#1565C0','ABP':'#5C6BC0','Mela Toning':'#1E88E5',
+  'Round Lab':'#3F7FBF','Torriden':'#D4A76A','Fwee':'#7EAED6','the saem':'#A1887F',
+  'hince':'#9E9E9E','THE TOOL LAB':'#8D6E63','3CE':'#E57373','Peripera':'#F48FB1',
+  'the tool for school':'#6D4C41','Aou':'#AED581','tooq':'#CE93D8','innsfree':'#66BB6A',
+  'MERZY':'#EF5350','Arencia':'#90CAF9','Longtake':'#5D4037','make p:rem':'#BCAAA4',
+  'Rooton':'#4DB6AC','MEDIHEAL':'#1E88E5','Delight Project':'#FF8A65',
+  '清淨園':'#1B5E20','農心':'#D84315','No Brand':'#FFC107','Binch':'#6D4C41','八道':'#E65100',
+  ':D Panthenol':'#4FC3F7','NO SWEAT':'#29B6F6','Eye Tension Up':'#42A5F5',
+  'REALDAY':'#AB47BC','Fillimilli':'#F8BBD0','COSNORI':'#CE93D8','Garglin':'#80CBC4',
+  'Anillo':'#FFD54F','CuLip':'#EF5350','Tocobo':'#A5D6A7'};
+const DATA=[
+["🧴","保養 — LJ 黑眼圈對策",[
+{"b":"VT","n":"Vitamin 眼霜","kr":"VT 리들샷 퍼밍 아이크림","who":"lj","p":"must","w":"oy","krw":25000,"tw":750,"note":"針對黑眼圈核心需求"},
+{"b":"Dr.Jart","n":"Cicapair 積雪草修護霜","kr":"닥터자르트 시카페어 수딩 리페어 크림","who":"lj","p":"must","w":"oy","krw":35000,"tw":1050,"note":"一生推！舒緩泛紅敏感肌救星"},
+{"b":"PRO-CALM","n":"維他命K乳霜","kr":"프로칼름 비타민K 크림","who":"lj","p":"must","w":"rx","krw":15000,"tw":0,"note":"緩解色素型黑眼圈＋瘀血","rx_note":"台灣買不到"},
+{"b":"Abib","n":"膠原蛋白眼膜 60枚","kr":"아비브 콜라겐 아이패치 부활초 젤리","who":"lj","p":"must","w":"oy","krw":22000,"tw":680,"note":"眼紋淡化、妝前服貼"},
+{"b":"REJUALL","n":"PDRN修護霜 1200ppm","kr":"리쥬올 PDRN 수복크림","who":"lj","p":"must","w":"oy","krw":18000,"tw":0,"note":"高濃度PDRN凝膠清爽嫩膚","rx_note":"台灣較難買到"},
+{"b":"S.NATURE","n":"角鯊烷保濕霜","kr":"에스네이처 아쿠아 스쿠알란 크림","who":"lj","p":"nice","w":"oy","krw":25000,"tw":720,"note":"妝前保濕超紅換季乾燥+分"},
+{"b":"HEVEBLUE","n":"PDRN積雪草 化妝水+精華","kr":"헤브블루 PDRN 시카 토너 + 세럼","who":"lj","p":"nice","w":"oy","krw":35000,"tw":0,"deal":"套組","note":"溫和不黏膩早上搭配用","rx_note":"台灣較難買到"},
+{"b":"REJURAN","n":"Healer UV 防曬 SPF50+","kr":"리쥬란 힐러 UV 프로텍션 크림","who":"lj","p":"nice","w":"oy","krw":28000,"tw":950,"note":"水光肌不搓泥含PDRN修復"}
+]],
+["💊","保養 — J6 控油抗痘",[
+{"b":"Acnon","n":"祛痘膏（藥局限定）","kr":"애크논 크림 (약국전용)","who":"j6","p":"must","w":"rx","krw":8000,"tw":0,"note":"紅腫痘厚敷，藥局才有","rx_note":"韓國藥局限定"},
+{"b":"Noscarna","n":"祛疤膏","kr":"노스카나 겔","who":"j6","p":"must","w":"rx","krw":12000,"tw":0,"note":"韓國NO.1淡化痘印","rx_note":"韓國藥局限定"},
+{"b":"Acleen","n":"水楊酸凝膠 2%","kr":"애크린 겔","who":"j6","p":"must","w":"rx","krw":8000,"tw":0,"note":"茶樹+水楊酸粉刺殺菌","rx_note":"韓國藥局限定"},
+{"b":"HANDOK","n":"CLEARTEEN 痘痘水","kr":"한독 클리어틴 토피컬 솔루션","who":"j6","p":"must","w":"rx","krw":12000,"tw":0,"note":"海棉頭好吸收水楊酸2%","rx_note":"韓國藥局限定"},
+{"b":"ABP","n":"點點霜","kr":"ABP 스팟 크림","who":"j6","p":"nice","w":"rx","krw":10000,"tw":0,"note":"脂肪粒/內包/痘痘溫和去角質","rx_note":"韓國藥局限定"},
+{"b":"Mela Toning","n":"小藍管祛斑霜","kr":"멜라토닝 크림","who":"j6","p":"nice","w":"rx","krw":15000,"tw":0,"note":"淡化痘印色素沉澱","rx_note":"韓國藥局限定"}
+]],
+["☀️","防曬",[
+{"b":"Round Lab","n":"白樺樹保濕防曬 1+1","kr":"라운드랩 자작나무 수분 선크림 1+1","who":"both","p":"must","w":"oy","krw":23700,"tw":490,"deal":"1+1","note":"輕薄水潤兩人各一"},
+{"b":"Round Lab","n":"防曬潤色款","kr":"라운드랩 자작나무 수분 톤업 선크림","who":"lj","p":"nice","w":"oy","krw":23700,"tw":490,"deal":"1+1","note":"防曬+自然提亮","st":"偏黃肌選自然色很襯膚"},
+{"b":"Round Lab","n":"防曬棒","kr":"라운드랩 자작나무 수분 선스틱","who":"both","p":"nice","w":"oy","krw":24000,"tw":520,"deal":"2入","note":"補防曬超方便不沾手"}
+]],
+["💄","底妝（暖調自然色）",[
+{"b":"Fwee","n":"玻璃光感氣墊","kr":"퓌 글래스팅 쿠션 글래스","who":"lj","p":"must","w":"oy","krw":25000,"tw":720,"note":"OY銷冠光澤薄透","st":"挑 Natural/Warm 色號"},
+{"b":"the saem","n":"遮瑕","kr":"더샘 커버 퍼펙션 팁 컨실러","who":"lj","p":"nice","w":"oy","krw":8000,"tw":200,"note":"遮瑕力OK質地好推","st":"選 1.5 Natural Beige"},
+{"b":"hince","n":"藍氣墊","kr":"힌스 세컨드 스킨 쿠션","who":"lj","p":"opt","w":"oy","krw":32000,"tw":920,"note":"水潤秋冬適合","st":"門市試暖調色號"}
+]],
+["💋","唇妝 & 頰彩",[
+{"b":"3CE","n":"唇膏（暖色 #30/#32）","kr":"3CE 무드 레시피 립 컬러 미니","who":"lj","p":"nice","w":"oy","krw":16000,"tw":520,"note":"水潤光澤","st":"#30浮光裸 #32破曉枳"},
+{"b":"3CE","n":"腮紅","kr":"3CE 페이스 블러쉬","who":"lj","p":"nice","w":"oy","krw":16000,"tw":490,"note":"韓女血色感精髓","st":"選蜜桃/杏色調"},
+{"b":"Peripera","n":"Syrupy Tok Cheek #08","kr":"페리페라 시러피 톡 치크 08호","who":"lj","p":"nice","w":"oy","krw":7500,"tw":220,"note":"OY 4.7星液態腮紅","st":"#08 葡萄柚偏暖"},
+{"b":"Torriden","n":"神經醯胺護唇膏 10+10","kr":"토리든 솔리드인 세라마이드 립에센스","who":"both","p":"must","w":"oy","krw":16000,"tw":290,"deal":"10+10","note":"回購N次便宜滋潤"},
+{"b":"Tocobo","n":"晚安唇膜（薄荷）","kr":"토코보 립 슬리핑 마스크 민트","who":"lj","p":"nice","w":"oy","krw":12000,"tw":350,"note":"睡前敷嘴唇變嫩"},
+{"b":"CuLip","n":"修護唇霜","kr":"큐립 연고 (의약외품)","who":"both","p":"nice","w":"rx","krw":8000,"tw":0,"note":"醫療級唇炎可用","rx_note":"韓國藥局限定"}
+]],
+["👁","眼妝 & 修容",[
+{"b":"the tool for school","n":"三色修容餅","kr":"투쿨포스쿨 아트클래스 바이로댕 셰이딩","who":"lj","p":"nice","w":"oy","krw":16000,"tw":480,"note":"鼻影+側臉自然","st":"暖棕偏黃肌最自然"},
+{"b":"Aou","n":"睫毛膏","kr":"아우 스키니 래쉬 마스카라","who":"lj","p":"nice","w":"oy","krw":12000,"tw":380,"note":"刷頭小畫下睫毛"},
+{"b":"tooq","n":"眼線筆 #Rose Nut","kr":"투크 방수 극세 아이라이너 로즈넛","who":"lj","p":"nice","w":"oy","krw":9000,"tw":280,"note":"寶藏品牌顏色最美"},
+{"b":"innsfree","n":"眉筆","kr":"이니스프리 오토 아이브로우 펜슬","who":"lj","p":"opt","w":"oy","krw":5000,"tw":160,"note":"回購多次便宜"},
+{"b":"MERZY","n":"單色眼影","kr":"머지 빅 아이 팔레트","who":"lj","p":"opt","w":"oy","krw":6000,"tw":190,"note":"蜜桃珊瑚色"}
+]],
+["🧼","清潔 & 洗護",[
+{"b":"Arencia","n":"年糕潔面乳（藍色）","kr":"아렌시아 프레시 블루 히솝 년 모찌 클렌저","who":"both","p":"nice","w":"oy","krw":15000,"tw":450,"note":"藍色最推洗完超滑"},
+{"b":"Longtake","n":"紅茶無花果洗髮精","kr":"롱테이크 블랙티 앤 피그 샴푸","who":"lj","p":"nice","w":"oy","krw":22000,"tw":650,"note":"味道持續會回購"},
+{"b":"make p:rem","n":"溫和卸妝乳","kr":"메이크프렘 세이프미 클렌징밀크","who":"lj","p":"nice","w":"oy","krw":18000,"tw":520,"note":"OY 4.8星不緊繃"},
+{"b":"Rooton","n":"護髮安瓶軟管","kr":"루톤 리쥬베어 헤어 앰플","who":"lj","p":"opt","w":"oy","krw":12000,"tw":380,"note":"柔順小條旅行方便"}
+]],
+["🍫","零食 & 食品",[
+{"b":"Delight Project","n":"魷魚絲甜米脆片 SIZE UP","kr":"딜라이트 프로젝트 찹쌀오징어채부각","who":"both","p":"must","w":"oy","krw":6000,"tw":0,"note":"OY PICK高蛋白","rx_note":"韓國限定"},
+{"b":"Delight Project","n":"青陽美乃滋魷魚絲脆片","kr":"딜라이트 프로젝트 청양마요 찹쌀오징어채부각","who":"both","p":"nice","w":"oy","krw":5000,"tw":0,"note":"辣味版 195kcal","rx_note":"韓國限定"},
+{"b":"Delight Project","n":"高蛋白奶昔","kr":"딜라이트 프로젝트 단백질 셰이크","who":"both","p":"nice","w":"oy","krw":5000,"tw":0,"note":"170kcal/19g蛋白","rx_note":"韓國限定"},
+{"b":"清淨園","n":"高湯塊 25入","kr":"청정원 맛선생 국물내기 한알 멸치디포리","who":"both","p":"nice","w":"mk","krw":5000,"tw":250,"note":"煮湯超方便"},
+{"b":"農心","n":"黑松露蝦條 BLACK","kr":"농심 새우깡 블랙","who":"both","p":"nice","w":"mk","krw":3000,"tw":120,"note":"經典升級"},
+{"b":"No Brand","n":"紫薯洋芋片","kr":"노브랜드 자색고구마 칩","who":"both","p":"opt","w":"mk","krw":2500,"tw":0,"note":"伴手禮","rx_note":"韓國限定"},
+{"b":"八道","n":"乾拌麵 海鮮醬燒 4入","kr":"팔도 비빔면","who":"both","p":"opt","w":"mk","krw":4000,"tw":160,"note":"必買拌麵"}
+]],
+["💊","藥局其他好物",[
+{"b":":D Panthenol","n":"熊貓再生霜","kr":"디판테놀 크림","who":"both","p":"nice","w":"rx","krw":8000,"tw":0,"note":"萬用修復","rx_note":"韓國藥局限定"},
+{"b":"NO SWEAT","n":"滾珠止汗劑","kr":"노스웻 롤온","who":"both","p":"nice","w":"rx","krw":10000,"tw":0,"note":"睡前塗隔天洗","rx_note":"韓國藥局限定"},
+{"b":"Eye Tension Up","n":"眼藥水","kr":"아이 텐션 업 점안액","who":"both","p":"opt","w":"rx","krw":7000,"tw":0,"note":"4種涼感隱形OK","rx_note":"韓國藥局限定"},
+{"b":"REALDAY","n":"口服PDRN","kr":"리얼데이 이너뷰티 우먼플러스","who":"lj","p":"opt","w":"rx","krw":18000,"tw":0,"note":"46種美肌葡萄味","rx_note":"韓國藥局限定"}
+]],
+["🎒","生活 & 工具",[
+{"b":"Fillimilli","n":"刷具組","kr":"필리밀리 브러시 세트","who":"lj","p":"opt","w":"oy","krw":15000,"tw":480,"note":"CP值高毛軟"},
+{"b":"COSNORI","n":"指緣修護霜","kr":"코스노리 네일 리페어 크림","who":"lj","p":"opt","w":"oy","krw":9000,"tw":280,"note":"指緣不泛紅"},
+{"b":"Garglin","n":"口腔噴霧","kr":"가글린 구강 스프레이","who":"both","p":"opt","w":"oy","krw":5000,"tw":0,"note":"旅行好用","rx_note":"韓國限定"},
+{"b":"Anillo","n":"香水 10ml","kr":"아닐로 오드퍼퓸","who":"lj","p":"opt","w":"oy","krw":15000,"tw":480,"note":"旅行包裝可愛"}
+]]
+];
+const WHO_L={lj:'LJ',j6:'J6',both:'共用'},WHO_C={lj:'who-lj',j6:'who-j6',both:'who-both'};
+const P_L={must:'★必買',nice:'值得買',opt:'看價格'},P_C={must:'tag-must',nice:'tag-nice',opt:'tag-opt'};
+const W_L={oy:'OY',rx:'藥局',mk:'超市'},W_C={oy:'tag-oy',rx:'tag-rx',mk:'tag-mk'};
+let filter='all',checked=JSON.parse(localStorage.getItem('kr4_ck')||'{}');
+let imgs=JSON.parse(localStorage.getItem('kr4_img')||'{}');
+let currentLBKey='';
+function krwToTwd(k){return Math.round(k*RATE)}
+function render(){
+  const wrap=document.getElementById('listWrap');let html='';
+  DATA.forEach(([icon,title,items],sIdx)=>{
+    const vis=items.filter(it=>matchF(it));
+    if(!vis.length&&filter!=='all')return;
+    html+=`<div class="section" id="sec${sIdx}">
+      <div class="section-header" onclick="toggleSec(${sIdx})">
+        <span class="section-icon">${icon}</span><span class="section-title">${title}</span>
+        <span class="section-count">${vis.length}</span><span class="section-arrow">▼</span>
+      </div><div class="section-items">`;
+    items.forEach((it,i)=>{
+      const k=`${sIdx}-${i}`,ck=checked[k],hid=!matchF(it),twd=krwToTwd(it.krw);
+      const color=BC[it.b]||'#8D6E63';
+      const init=it.b.replace(/[^A-Za-z\u4e00-\u9fff]/g,'').slice(0,2)||it.b[0];
+      const hasImg=imgs[k];
+      const saveTw=it.tw>0?it.tw-twd:0;
+      let priceExtra='';
+      if(it.deal)priceExtra+=`<span class="price-deal">${it.deal}</span>`;
+      if(it.tw>0&&saveTw>0)priceExtra+=`<span class="price-save">省$${saveTw}</span>`;
+      else if(it.tw===0)priceExtra+=`<span class="price-only">${it.rx_note||'韓國限定'}</span>`;
+      let twLine='';
+      if(it.tw>0)twLine=`<div class="price-tw-line">台灣均價 <span class="tw-orig">NT$${it.tw}</span> → 韓國 NT$${twd}</div>`;
+      html+=`<div class="item ${ck?'checked':''} ${hid?'hidden':''}" data-key="${k}" data-twd="${twd}">
+        <div class="item-check" onclick="toggleCk('${k}')"></div>
+        <div class="item-img" style="background:${hasImg?'#f5f5f5':color}" onclick="openLB(${sIdx},${i})">
+          ${hasImg?`<img src="${hasImg}">`:init}
+          <span class="img-label">${hasImg?'🔍':'📷'}</span>
+        </div>
+        <div class="item-body">
+          <div class="item-top"><span class="item-brand">${it.b}</span><span class="item-who ${WHO_C[it.who]}">${WHO_L[it.who]}</span></div>
+          <div class="item-kr">${it.kr}</div>
+          <div class="item-name">${it.n}</div>
+          <div class="item-note">${it.note}${it.st?`<br><span class="skin-tip">💡 ${it.st}</span>`:''}</div>
+          <div class="item-tags"><span class="tag ${P_C[it.p]}">${P_L[it.p]}</span><span class="tag ${W_C[it.w]}">${W_L[it.w]}</span></div>
+          <div class="item-price-bar">
+            <span class="price-kr">₩${it.krw.toLocaleString()}</span>
+            <span class="price-tw">≈ NT$${twd}</span>
+            ${priceExtra}
+          </div>
+          ${twLine}
+        </div>
+      </div>`;
+    });
+    html+='</div></div>';
+  });
+  wrap.innerHTML=html;updateStats();
+}
+function matchF(it){if(filter==='all')return true;if(filter==='lj')return it.who==='lj'||it.who==='both';
+  if(filter==='j6')return it.who==='j6'||it.who==='both';if(filter==='must')return it.p==='must';
+  if(filter==='nice')return it.p==='nice';if(filter==='oy')return it.w==='oy';if(filter==='rx')return it.w==='rx';return true}
+function setFilter(f,btn){filter=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render()}
+function toggleCk(k){checked[k]=!checked[k];if(!checked[k])delete checked[k];localStorage.setItem('kr4_ck',JSON.stringify(checked));
+  const card=document.querySelector(`[data-key="${k}"]`);if(card)card.classList.toggle('checked');updateStats()}
+function toggleSec(i){document.getElementById('sec'+i).classList.toggle('collapsed')}
+function openLB(sIdx,iIdx){
+  const it=DATA[sIdx][2][iIdx];currentLBKey=`${sIdx}-${iIdx}`;
+  document.getElementById('lbBrand').textContent=it.b;
+  document.getElementById('lbKr').textContent=it.kr;
+  document.getElementById('lbName').textContent=it.n;
+  const q=encodeURIComponent(it.kr);
+  document.getElementById('lbSearchBtn').href=`https://www.google.com/search?tbm=isch&q=${q}`;
+  document.getElementById('lbOYBtn').href=`https://global.oliveyoung.com/display/search?query=${encodeURIComponent(it.b+' '+it.n.split('（')[0])}`;
+  const frame=document.getElementById('lbImgFrame');
+  const saved=imgs[currentLBKey];
+  if(saved){frame.innerHTML=`<img src="${saved}" style="max-width:100%;max-height:100%;object-fit:contain">`}
+  else{const c=BC[it.b]||'#8D6E63';
+    frame.innerHTML=`<div style="width:100%;height:100%;background:${c};display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:10px">
+      <div style="font-size:42px;font-weight:900">${it.b.slice(0,3)}</div>
+      <div style="font-size:14px;opacity:0.8">點「📷 上傳圖片」加入產品照</div></div>`}
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLB(e){if(e&&e.target!==document.getElementById('lightbox'))return;document.getElementById('lightbox').classList.remove('open')}
+function handleUpload(e){
+  const file=e.target.files[0];if(!file||!currentLBKey)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const dataUrl=ev.target.result;
+    try{imgs[currentLBKey]=dataUrl;localStorage.setItem('kr4_img',JSON.stringify(imgs))}
+    catch(err){showToast('圖片太大，請壓縮後再試');return}
+    document.getElementById('lbImgFrame').innerHTML=`<img src="${dataUrl}" style="max-width:100%;max-height:100%;object-fit:contain">`;
+    render();showToast('圖片已儲存 ✓');
+  };reader.readAsDataURL(file);e.target.value='';
+}
+function updateStats(){
+  let total=0,ck=0,must=0,nice=0,opt=0,spent=0,totalSave=0;
+  DATA.forEach(([,,items],sIdx)=>{items.forEach((it,i)=>{
+    total++;const twd=krwToTwd(it.krw);
+    if(it.p==='must')must++;if(it.p==='nice')nice++;if(it.p==='opt')opt++;
+    if(checked[`${sIdx}-${i}`]){ck++;spent+=twd;if(it.tw>0)totalSave+=it.tw-twd}
+  })});
+  document.getElementById('mustCount').textContent=must;
+  document.getElementById('niceCount').textContent=nice;
+  document.getElementById('optCount').textContent=opt;
+  document.getElementById('saveTotal').textContent=`$${totalSave}`;
+  const remain=BUDGET-spent;const pct=Math.min(100,Math.round(spent/BUDGET*100));
+  const bar=document.getElementById('stickyProgress');
+  bar.style.width=pct+'%';bar.style.background=pct>100?'#ff6b6b':pct>80?'var(--accent)':'var(--green)';
+  const totalEl=document.getElementById('stickyTotal');
+  totalEl.innerHTML=spent>BUDGET?`<span class="over">NT$${spent.toLocaleString()}</span>`:`NT$${spent.toLocaleString()}`;
+  document.getElementById('stickySub').textContent=`${ck} 品已勾｜剩餘 NT$${Math.max(0,remain).toLocaleString()}｜已省 NT$${totalSave}`;
+}
+function resetAll(){if(!confirm('確定重置所有勾選？'))return;checked={};localStorage.setItem('kr4_ck','{}');render();showToast('已重置 ✓')}
+function showSummary(){
+  let ck=0,total=0,spent=0,save=0;const bw={oy:0,rx:0,mk:0};
+  DATA.forEach(([,,items],sIdx)=>{items.forEach((it,i)=>{total++;
+    if(checked[`${sIdx}-${i}`]){ck++;spent+=krwToTwd(it.krw);bw[it.w]=(bw[it.w]||0)+1;if(it.tw>0)save+=it.tw-krwToTwd(it.krw)}})});
+  showToast(`✅ ${ck}/${total}品｜NT$${spent.toLocaleString()}｜省$${save}｜OY${bw.oy} 藥局${bw.rx} 超市${bw.mk}`);
+}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+render();
+</script>
+</body>
+</html>
