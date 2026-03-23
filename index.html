@@ -40,8 +40,8 @@ body{font-family:'Noto Sans TC','Noto Sans KR',sans-serif;background:var(--bg);c
 .item-img{width:60px;height:60px;border-radius:12px;flex-shrink:0;overflow:hidden;cursor:pointer;position:relative;
   display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#fff}
 .item-img img{width:100%;height:100%;object-fit:cover}
-.item-img .img-label{position:absolute;bottom:0;right:0;background:rgba(0,0,0,0.55);color:#fff;
-  font-size:9px;padding:2px 5px;border-radius:6px 0 0 0;font-weight:700}
+.item-img .img-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.55);color:#fff;
+  font-size:9px;padding:2px 0;text-align:center;font-weight:700}
 .item-body{flex:1;min-width:0;display:flex;flex-direction:column}
 .item-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .item-brand{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:0.2px}
@@ -187,17 +187,19 @@ const BC={'VT':'#8B4513','Dr.Jart':'#2E7D32','PRO-CALM':'#6A1B9A','Abib':'#BFA98
   '清淨園':'#1B5E20','農心':'#D84315','No Brand':'#FFC107','Binch':'#6D4C41','八道':'#E65100',
   ':D Panthenol':'#4FC3F7','NO SWEAT':'#29B6F6','Eye Tension Up':'#42A5F5',
   'REALDAY':'#AB47BC','Fillimilli':'#F8BBD0','COSNORI':'#CE93D8','Garglin':'#80CBC4',
-  'Anillo':'#FFD54F','CuLip':'#EF5350','Tocobo':'#A5D6A7'};
+  'Anillo':'#FFD54F','CuLip':'#EF5350','Tocobo':'#A5D6A7','mommycare':'#7ECEC1'};
 const DATA=[
 ["🧴","保養 — LJ 黑眼圈對策",[
 {"b":"VT","n":"Vitamin 眼霜","kr":"VT 리들샷 퍼밍 아이크림","who":"lj","p":"must","w":"oy","krw":25000,"tw":750,"note":"針對黑眼圈核心需求"},
+{"b":"VT","n":"Reedle Shot 100 精華 30ml 雙入組","kr":"VT 리들샷 100 에센스 30ml 더블팩 (+PDRN 에센스 증정)","who":"lj","p":"nice","w":"oy","krw":32000,"tw":1200,"deal":"雙入組","note":"OY熱銷毛孔精華，微針導入提升吸收"},
 {"b":"Dr.Jart","n":"Cicapair 積雪草修護霜","kr":"닥터자르트 시카페어 수딩 리페어 크림","who":"lj","p":"must","w":"oy","krw":35000,"tw":1050,"note":"一生推！舒緩泛紅敏感肌救星"},
 {"b":"PRO-CALM","n":"維他命K乳霜","kr":"프로칼름 비타민K 크림","who":"lj","p":"must","w":"rx","krw":15000,"tw":0,"note":"緩解色素型黑眼圈＋瘀血","rx_note":"台灣買不到"},
 {"b":"Abib","n":"膠原蛋白眼膜 60枚","kr":"아비브 콜라겐 아이패치 부활초 젤리","who":"lj","p":"must","w":"oy","krw":22000,"tw":680,"note":"眼紋淡化、妝前服貼"},
 {"b":"REJUALL","n":"PDRN修護霜 1200ppm","kr":"리쥬올 PDRN 수복크림","who":"lj","p":"must","w":"oy","krw":18000,"tw":0,"note":"高濃度PDRN凝膠清爽嫩膚","rx_note":"台灣較難買到"},
 {"b":"S.NATURE","n":"角鯊烷保濕霜","kr":"에스네이처 아쿠아 스쿠알란 크림","who":"lj","p":"nice","w":"oy","krw":25000,"tw":720,"note":"妝前保濕超紅換季乾燥+分"},
 {"b":"HEVEBLUE","n":"PDRN積雪草 化妝水+精華","kr":"헤브블루 PDRN 시카 토너 + 세럼","who":"lj","p":"nice","w":"oy","krw":35000,"tw":0,"deal":"套組","note":"溫和不黏膩早上搭配用","rx_note":"台灣較難買到"},
-{"b":"REJURAN","n":"Healer UV 防曬 SPF50+","kr":"리쥬란 힐러 UV 프로텍션 크림","who":"lj","p":"nice","w":"oy","krw":28000,"tw":950,"note":"水光肌不搓泥含PDRN修復"}
+{"b":"REJURAN","n":"Healer UV 防曬 SPF50+","kr":"리쥬란 힐러 UV 프로텍션 크림","who":"lj","p":"nice","w":"oy","krw":28000,"tw":950,"note":"水光肌不搓泥含PDRN修復"},
+{"b":"mommycare","n":"海葡萄毛孔緊緻視黃醇安瓶 Pingu聯名 50ml+補充裝","kr":"마미케어 바다포도 레티놀 모공앰플 50ml 리필세트 (핑구에디션 +리필50ml+핑구키링)","who":"lj","p":"nice","w":"oy","krw":35000,"tw":0,"deal":"補充裝+企鵝鑰匙圈","note":"OY熱銷毛孔安瓶！Pingu聯名限定超可愛","rx_note":"韓國OY限定聯名"}
 ]],
 ["💊","保養 — J6 控油抗痘",[
 {"b":"Acnon","n":"祛痘膏（藥局限定）","kr":"애크논 크림 (약국전용)","who":"j6","p":"must","w":"rx","krw":8000,"tw":0,"note":"紅腫痘厚敷，藥局才有","rx_note":"韓國藥局限定"},
@@ -291,9 +293,10 @@ function render(){
       if(it.tw>0)twLine=`<div class="price-tw-line">台灣均價 <span class="tw-orig">NT$${it.tw}</span> → 韓國 NT$${twd}</div>`;
       html+=`<div class="item ${ck?'checked':''} ${hid?'hidden':''}" data-key="${k}" data-twd="${twd}">
         <div class="item-check" onclick="toggleCk('${k}')"></div>
-        <div class="item-img" style="background:${hasImg?'#f5f5f5':color}" onclick="openLB(${sIdx},${i})">
-          ${hasImg?`<img src="${hasImg}">`:init}
-          <span class="img-label">${hasImg?'🔍':'📷'}</span>
+        <div class="item-img" style="background:${hasImg?'#f5f5f5':color}" onclick="${hasImg?`openLB(${sIdx},${i})`:`directUpload('${k}')`}">
+          ${hasImg?`<img src="${hasImg}">`:`<span style="font-size:22px">＋</span>`}
+          <span class="img-label">${hasImg?'🔍 放大':'📷 加圖'}</span>
+          <input type="file" accept="image/*" id="fu_${k}" style="display:none" onchange="onDirectUpload(event,'${k}')">
         </div>
         <div class="item-body">
           <div class="item-top"><span class="item-brand">${it.b}</span><span class="item-who ${WHO_C[it.who]}">${WHO_L[it.who]}</span></div>
@@ -343,11 +346,18 @@ function handleUpload(e){
   const file=e.target.files[0];if(!file||!currentLBKey)return;
   const reader=new FileReader();
   reader.onload=function(ev){
-    const dataUrl=ev.target.result;
-    try{imgs[currentLBKey]=dataUrl;localStorage.setItem('kr4_img',JSON.stringify(imgs))}
-    catch(err){showToast('圖片太大，請壓縮後再試');return}
-    document.getElementById('lbImgFrame').innerHTML=`<img src="${dataUrl}" style="max-width:100%;max-height:100%;object-fit:contain">`;
-    render();showToast('圖片已儲存 ✓');
+    const img=new Image();
+    img.onload=function(){
+      const max=400;let w=img.width,h=img.height;
+      if(w>max||h>max){const r=Math.min(max/w,max/h);w*=r;h*=r}
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed=c.toDataURL('image/jpeg',0.75);
+      try{imgs[currentLBKey]=compressed;localStorage.setItem('kr4_img',JSON.stringify(imgs))}
+      catch(err){showToast('儲存空間不足');return}
+      document.getElementById('lbImgFrame').innerHTML=`<img src="${compressed}" style="max-width:100%;max-height:100%;object-fit:contain">`;
+      render();showToast('圖片已儲存 ✓');
+    };img.src=ev.target.result;
   };reader.readAsDataURL(file);e.target.value='';
 }
 function updateStats(){
@@ -374,6 +384,26 @@ function showSummary(){
   DATA.forEach(([,,items],sIdx)=>{items.forEach((it,i)=>{total++;
     if(checked[`${sIdx}-${i}`]){ck++;spent+=krwToTwd(it.krw);bw[it.w]=(bw[it.w]||0)+1;if(it.tw>0)save+=it.tw-krwToTwd(it.krw)}})});
   showToast(`✅ ${ck}/${total}品｜NT$${spent.toLocaleString()}｜省$${save}｜OY${bw.oy} 藥局${bw.rx} 超市${bw.mk}`);
+}
+function directUpload(k){document.getElementById('fu_'+k).click()}
+function onDirectUpload(e,k){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const dataUrl=ev.target.result;
+    // Compress if needed
+    const img=new Image();
+    img.onload=function(){
+      const max=200;let w=img.width,h=img.height;
+      if(w>max||h>max){const r=Math.min(max/w,max/h);w*=r;h*=r}
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed=c.toDataURL('image/jpeg',0.7);
+      try{imgs[k]=compressed;localStorage.setItem('kr4_img',JSON.stringify(imgs))}
+      catch(err){showToast('儲存空間不足，請壓縮圖片');return}
+      render();showToast('圖片已加入 ✓');
+    };img.src=dataUrl;
+  };reader.readAsDataURL(file);e.target.value='';
 }
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 render();
